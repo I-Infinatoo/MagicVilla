@@ -45,6 +45,7 @@ namespace MagicVilla_VillaAPI.Controllers
             You can use a string too as a return type, or if you want to provide 
             the Content-Type you can use return Content("Your string").
          */
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<VillaDTO>> GetVillas() { 
             return Ok(VillaStore.villaList);
         }
@@ -58,10 +59,34 @@ namespace MagicVilla_VillaAPI.Controllers
 
         // [HttpGet("id")]
         [HttpGet("{id:int}")]
-        
+
+        /* Status code Documentation
+         * 
+         * This will tell the API about which Codes are
+         * possible to get in return
+         * 
+         * [ProducesResponseType(200)]
+         * [ProducesResponseType(400)]
+         * [ProducesResponseType(404)]
+         */
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<VillaDTO> GetVilla(int id)
         {
-            return Ok(VillaStore.villaList.FirstOrDefault(u=>u.Id==id));
+            if (id == 0) {
+                // status code : 400
+                return BadRequest();
+            }
+
+            var villa = VillaStore.villaList.FirstOrDefault(u => u.Id == id);
+            if (villa == null) { 
+                // status code : 404
+                return NotFound();
+            }
+
+            // status code : 200
+            return Ok(villa);
         }
     }
 }
