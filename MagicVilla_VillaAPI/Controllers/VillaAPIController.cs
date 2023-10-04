@@ -21,6 +21,16 @@ namespace MagicVilla_VillaAPI.Controllers
      */
     public class VillaAPIController : ControllerBase
     {
+        /* Activating Logger
+         *  inside the console
+         */
+        private readonly ILogger<VillaAPIController> _logger;
+        public VillaAPIController(ILogger<VillaAPIController> logger) 
+        {
+            _logger = logger;
+        }
+
+
         /* endpoint
          * 
          * [HttpGet] => this will specify that, this endpoint is the HTTP GET endpoint
@@ -48,7 +58,9 @@ namespace MagicVilla_VillaAPI.Controllers
             the Content-Type you can use return Content("Your string").
          */
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<VillaDTO>> GetVillas() { 
+        public ActionResult<IEnumerable<VillaDTO>> GetVillas() {
+            
+            _logger.LogInformation("Getting All Vilas");
             return Ok(VillaStore.villaList);
         }
 
@@ -77,6 +89,7 @@ namespace MagicVilla_VillaAPI.Controllers
         public ActionResult<VillaDTO> GetVilla(int id)
         {
             if (id == 0) {
+                _logger.LogError("Get Villa error with ID: " + id);
                 // status code : 400
                 return BadRequest();
             }
