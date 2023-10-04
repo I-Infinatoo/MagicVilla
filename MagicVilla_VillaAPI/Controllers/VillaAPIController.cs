@@ -2,6 +2,7 @@
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
@@ -58,7 +59,7 @@ namespace MagicVilla_VillaAPI.Controllers
          */
 
         // [HttpGet("id")]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetVilla")]
 
         /* Status code Documentation
          * 
@@ -87,6 +88,36 @@ namespace MagicVilla_VillaAPI.Controllers
 
             // status code : 200
             return Ok(villa);
+        }
+
+        /* HTTP Post
+         *  to receive from the API
+         *  
+         *  [FromBody] : to indicate the parameter is received through API
+         */
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<VillaDTO> CreateVilla([FromBody]VillaDTO villaDTO)
+        {
+            if(villaDTO ==  null)
+            {
+                return BadRequest(villaDTO);
+            }
+
+            if (villaDTO.Id > 0) { 
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            villaDTO.Id = VillaStore.villaList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
+
+            VillaStore.villaList.Add(villaDTO);
+
+            //return Ok(villaDTO);
+                /* To get the location where the new villa is created.
+             * We have to use CreateAtRoute()
+             */
+            return CreatedAtRoute("GetVilla", new { id = villaDTO.Id }, villaDTO);
         }
     }
 }
