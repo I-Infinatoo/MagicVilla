@@ -1,4 +1,6 @@
-﻿namespace MagicVilla_VillaAPI.Models.Dto
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MagicVilla_VillaAPI.Models.Dto
 {
     /* DTO:
      * 
@@ -7,6 +9,14 @@
     public class VillaDTO
     {
         public int Id { get; set; }
+
+        /* Checks on Name Field
+         * 
+         * [Required] => This indicates that Name field is required to be entered
+         * [MaxLength(30)] => Maximum allowed length is 30 characters
+         */
+        [Required]
+        [MaxLength(30)]
         public string Name { get; set; }
     }
 }
