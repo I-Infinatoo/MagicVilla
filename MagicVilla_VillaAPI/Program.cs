@@ -2,7 +2,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+/* AddXmlDataContractSerializerFormatters() => Add XML support to API
+ * 
+ * option.ReturnHttpNotAcceptable = true; => User has to set the header for type
+ */
+builder.Services.AddControllers(option => { 
+    option.ReturnHttpNotAcceptable = true;
+}).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

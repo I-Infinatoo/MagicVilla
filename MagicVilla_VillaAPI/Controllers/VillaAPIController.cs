@@ -1,6 +1,7 @@
 ﻿using MagicVilla_VillaAPI.Data;
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
@@ -58,9 +59,9 @@ namespace MagicVilla_VillaAPI.Controllers
          * ("{id:int}") => this will tell that 'id' is int
          */
 
-        // [HttpGet("id")]
+        /* [HttpGet("id")]
+         */
         [HttpGet("{id:int}", Name = "GetVilla")]
-
         /* Status code Documentation
          * 
          * This will tell the API about which Codes are
@@ -94,6 +95,12 @@ namespace MagicVilla_VillaAPI.Controllers
          *  to receive from the API
          *  
          *  [FromBody] : to indicate the parameter is received through API
+         */
+        
+        /* Comment(POST):
+         *  Not included: If the user passes ID explicitly, 
+         *  then it will produce error:
+         *  500-Internal Server Error
          */
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -135,5 +142,85 @@ namespace MagicVilla_VillaAPI.Controllers
              */
             return CreatedAtRoute("GetVilla", new { id = villaDTO.Id }, villaDTO);
         }
+
+        /* Delete the villa
+         * 
+         * With return type "IActionResult": We do not define the
+         *  return value from the method
+         
+         */
+        [HttpDelete("{id:int}", Name = "DeleteVilla")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult DeleteVilla(int id) {
+
+            if (id == 0) {
+                return BadRequest();
+                // 400-Bad Request
+            }
+            var villa = VillaStore.villaList.FirstOrDefault(u=>u.Id == id);
+            if (villa == null) { 
+                return NotFound();
+                // 404-Not Found
+            }
+            VillaStore.villaList.Remove(villa);
+
+            return NoContent();
+            // 204-No Content Response
+            
+        }
+
+        /*HttpPut
+         */
+        [HttpPut("{id:int}", Name = "UpdateVilla")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult UpdateVilla(int id, [FromBody] VillaDTO villaDTO) { 
+            
+            if(villaDTO == null || id != villaDTO.Id) { 
+                return BadRequest();
+            }
+
+            var villa = VillaStore.villaList.FirstOrDefault(u=>u.Id == id);
+            villa.Name = villaDTO.Name;
+            villa.Occupancy = villaDTO.Occupancy;
+            villa.Sqft = villaDTO.Sqft;
+
+            return NoContent();
+        }
+
+        /* HttpPatch
+         */
+        [HttpPatch("{id:int}", Name = "UpdatePartialVilla")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult UpdatePartialVilla(int id,
+            JsonPatchDocument<VillaDTO> patchDTO)
+        {
+            if (patchDTO == null || id == 0) {
+                return BadRequest();
+            }
+            var villa = VillaStore.villaList.FirstOrDefault(u => u.Id == id);
+
+            if (villa == null) {
+                return BadRequest();
+            }
+
+            /* If there is any error while Apply,
+             * then store the error in 'ModelState'  
+             */
+            patchDTO.ApplyTo(villa, ModelState);
+
+            /* In case of error, ModelState would not be valid
+             */
+            if (!ModelState.IsValid) { 
+                return BadRequest(ModelState);
+            }
+
+            return NoContent();
+        }
+    
+        
     }
 }
