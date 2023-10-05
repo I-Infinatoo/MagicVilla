@@ -1,4 +1,6 @@
-using MagicVilla_VillaAPI.Logging;
+using MagicVilla_VillaAPI.Data;
+//using MagicVilla_VillaAPI.Logging;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 //// it will tell the application to use serilog instead of default one
 //builder.Host.UseSerilog();
+
+builder.Services.AddDbContext<ApplicationDbContext>(option => {
+    option.UseSqlServer(builder.Configuration
+        .GetConnectionString("DefaultSQLConnection"));
+});
 
 /* AddXmlDataContractSerializerFormatters() => Add XML support to API
  * 
