@@ -1,18 +1,18 @@
-using Serilog;
+using MagicVilla_VillaAPI.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-/* Logger
-    - This will be used to log in the file.
- */
-Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
-    .WriteTo.File("log/villaLogs.txt", rollingInterval:RollingInterval.Month)
-    .CreateLogger();
+///* Logger
+//    - This will be used to log in the file.
+// */
+//Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+//    .WriteTo.File("log/villaLogs.txt", rollingInterval:RollingInterval.Month)
+//    .CreateLogger();
 
-// it will tell the application to use serilog instead of default one
-builder.Host.UseSerilog();
+//// it will tell the application to use serilog instead of default one
+//builder.Host.UseSerilog();
 
 /* AddXmlDataContractSerializerFormatters() => Add XML support to API
  * 
@@ -24,6 +24,7 @@ builder.Services.AddControllers(option => {
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ILogging, LoggingV2>();
 
 var app = builder.Build();
 
