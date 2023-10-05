@@ -5,6 +5,8 @@ namespace MagicVilla_VillaAPI.Models.Dto
     /* DTO:
      * 
      * Provides wrapper between controller and model
+     * 
+     * Used for communicating with API 
      */
     public class VillaDTO
     {
@@ -20,7 +22,13 @@ namespace MagicVilla_VillaAPI.Models.Dto
         public string Name { get; set; }
   
         public int Occupancy { get; set; }
-
+        public string Details { get; set; }
+        
+        [Required]
+        public double Rate { get; set; }
         public int Sqft { get; set; }
+
+        public string ImageUrl { get; set; }
+        public string Amenity { get; set; }
     }
 }
